@@ -1,4 +1,12 @@
 browser.commands.onCommand.addListener(function(command) {
+
+	if (command.startsWith("stt-")) {
+		const index = parseInt(command.split("-")[1]) - 1;
+		browser.tabs.query({ currentWindow: true, hidden: false }).then(tabs => {
+			browser.tabs.update(tabs[index].id, { active: true });
+		});
+	}
+
 	if (command === "next-tab" || command === "prev-tab") {
 		browser.tabs.query({ currentWindow: true }).then(tabs => {
 			const activeTab = tabs.find(tab => tab.active);
