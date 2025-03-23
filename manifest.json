@@ -66,6 +66,12 @@
         "default": "Ctrl+7"
       },
       "description": "Switch to tab 7"
+    },
+    "close-others": {
+      "suggested_key": {
+        "default": "F8"
+      },
+      "description": "Close other tabs"
     }
   }
 }
