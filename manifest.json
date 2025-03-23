@@ -72,6 +72,18 @@
         "default": "F8"
       },
       "description": "Close other tabs"
+    },
+    "history-back": {
+      "suggested_key": {
+        "default": "Ctrl+Left"
+      },
+      "description": "Navigate back in history"
+    },
+    "history-forward": {
+      "suggested_key": {
+        "default": "Ctrl+Right"
+      },
+      "description": "Navigate forward in history"
     }
   }
 }

@@ -1,14 +1,7 @@
 browser.commands.onCommand.addListener(function(command) {
-	if (command.startsWith("close-others")) {
-		browser.tabs.query({ currentWindow: true, hidden: false, active: false }).then(tabs => {
-			tabs.map(tab => tab.id).forEach((tabId) => browser.tabs.remove(tabId))
-		})
-		return;
-	}
-
 	if (command.startsWith("stt-")) {
 		const index = parseInt(command.split("-")[1]) - 1;
-		browser.tabs.query({ currentWindow: true, hidden: false }).then(tabs => {
+		browser.tabs.query({ currentWindow: true }).then(tabs => {
 			browser.tabs.update(tabs[index].id, { active: true });
 		});
 
@@ -50,4 +43,24 @@ browser.commands.onCommand.addListener(function(command) {
 
 		return;
 	}
+
+	if (command.startsWith("history-")) {
+		const action = command.split("-")[1];
+		if (action === "back") {
+			browser.tabs.goBack();
+		} else {
+			browser.tabs.goForward();
+		}
+
+		return;
+	}
+
+	if (command.startsWith("close-others")) {
+		browser.tabs.query({ currentWindow: true, hidden: false, active: false }).then(tabs => {
+			tabs.map(tab => tab.id).forEach((tabId) => browser.tabs.remove(tabId))
+		})
+
+		return;
+	}
+
 });
