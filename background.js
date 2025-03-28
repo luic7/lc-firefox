@@ -1,3 +1,16 @@
+async function initTabPreferences() {
+	try {
+		let result = await browser.browserSettings.newTabPosition.set({
+			value: "afterCurrent",
+		});
+		console.log(`New tab position set to afterCurrent: ${result}`);
+
+	} catch (error) {
+		console.error("Error setting tab preferences:", error);
+	}
+}
+initTabPreferences();
+
 browser.commands.onCommand.addListener(function(command) {
 	if (command.startsWith("stt-")) {
 		const index = parseInt(command.split("-")[1]) - 1;
@@ -60,7 +73,28 @@ browser.commands.onCommand.addListener(function(command) {
 		browser.tabs.query({ currentWindow: true, hidden: false, active: false }).then(tabs => {
 			tabs.map(tab => tab.id).forEach((tabId) => browser.tabs.remove(tabId))
 		})
+		return;
 
+	}
+
+	if (command.startsWith("close-tab")) {
+		browser.tabs.query({ currentWindow: true, hidden: false }).then(tabs => {
+			const activeTab = tabs.find(tab => tab.active);
+			const activeIndex = tabs.findIndex(tab => tab.active);
+
+			let nextTabIndex;
+			if (activeIndex > 0) {
+				nextTabIndex = activeIndex - 1;
+			} else if (tabs.length > 1) {
+				nextTabIndex = tabs.length - 1;
+			}
+
+			// Only proceed if there's another tab to go to
+			if (nextTabIndex !== undefined) {
+				browser.tabs.update(tabs[nextTabIndex].id, { active: true });
+				browser.tabs.remove(activeTab.id);
+			}
+		});
 		return;
 	}
 
