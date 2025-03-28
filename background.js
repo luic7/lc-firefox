@@ -26,6 +26,7 @@ browser.commands.onCommand.addListener(function(command) {
 		});
 
 		return;
+
 	}
 
 	if (command === "prior-tab") {
