@@ -89,13 +89,19 @@ browser.commands.onCommand.addListener(function(command) {
 				nextTabIndex = tabs.length - 1;
 			}
 
-			// Only proceed if there's another tab to go to
 			if (nextTabIndex !== undefined) {
 				browser.tabs.update(tabs[nextTabIndex].id, { active: true });
 				browser.tabs.remove(activeTab.id);
 			}
 		});
 		return;
+	}
+
+	if (command === "copy-url") {
+		browser.tabs.query({ active: true, currentWindow: true }).then(tabs => {
+			const url = tabs[0].url;
+			navigator.clipboard.writeText(url);
+		});
 	}
 
 });
