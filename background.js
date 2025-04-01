@@ -85,8 +85,6 @@ browser.commands.onCommand.addListener(function(command) {
 			let nextTabIndex;
 			if (activeIndex > 0) {
 				nextTabIndex = activeIndex - 1;
-			} else if (tabs.length > 1) {
-				nextTabIndex = tabs.length - 1;
 			}
 
 			if (nextTabIndex !== undefined) {
