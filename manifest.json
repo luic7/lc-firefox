@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "lc-shortcuts",
-  "version": "1.5",
+  "version": "1.8",
   "background": {
     "scripts": ["background.js"]
   },
@@ -78,12 +78,6 @@
         "default": "F7"
       },
       "description": "Close tab and go to left"
-    },
-    "copy-url": {
-      "suggested_key": {
-        "default": "F6"
-      },
-      "description": "Copy url"
     }
   }
 }
