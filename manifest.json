@@ -1,11 +1,29 @@
 {
   "manifest_version": 2,
   "name": "lc-shortcuts",
-  "version": "1.8",
-  "background": {
-    "scripts": ["background.js"]
+  "version": "1.12",
+  "browser_specific_settings": {
+    "gecko": {
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
+    }
   },
-  "permissions": ["tabs", "browserSettings"],
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
+  },
+  "permissions": [
+    "tabs",
+    "browserSettings",
+    "clipboardWrite",
+    "activeTab",
+    "notifications"
+  ],
   "commands": {
     "next-tab": {
       "suggested_key": {
@@ -67,17 +85,23 @@
       },
       "description": "Switch to tab 7"
     },
-    "close-others": {
+    "close-tab": {
       "suggested_key": {
         "default": "F8"
       },
+      "description": "Close tab and go to left"
+    },
+    "close-others": {
+      "suggested_key": {
+        "default": "Ctrl+F8"
+      },
       "description": "Close other tabs"
     },
-    "close-tab": {
+    "copy-url": {
       "suggested_key": {
         "default": "F7"
       },
-      "description": "Close tab and go to left"
+      "description": "Copy current tab URL to clipboard"
     }
   }
 }
