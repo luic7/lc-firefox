@@ -88,6 +88,63 @@ browser.commands.onCommand.addListener(function(command) {
 
 });
 
+// =====================
+// Tab Index Renaming
+// =====================
+
+async function renameTabWithIndex(tab, displayIndex) {
+  if (!tab.url || tab.url.startsWith('about:') || tab.url.startsWith('moz-extension:')) {
+    return;
+  }
+
+  try {
+    await browser.tabs.executeScript(tab.id, {
+      code: `(function() {
+        const originalTitle = document.title.replace(/^\\d+:\\s*/, '');
+        document.title = '${displayIndex}: ' + originalTitle;
+      })();`
+    });
+  } catch (e) {}
+}
+
+async function updateAllTabIndices(windowId) {
+  const tabs = await browser.tabs.query({ windowId: windowId });
+  for (let i = 0; i < tabs.length; i++) {
+    renameTabWithIndex(tabs[i], i + 1);
+  }
+}
+
+browser.tabs.onMoved.addListener((tabId, moveInfo) => {
+  updateAllTabIndices(moveInfo.windowId);
+});
+
+browser.tabs.onCreated.addListener((tab) => {
+  updateAllTabIndices(tab.windowId);
+});
+
+browser.tabs.onRemoved.addListener((tabId, removeInfo) => {
+  if (!removeInfo.isWindowClosing) {
+    updateAllTabIndices(removeInfo.windowId);
+  }
+});
+
+browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.title) {
+    const expectedPrefix = `${tab.index + 1}: `;
+    if (!changeInfo.title.startsWith(expectedPrefix)) {
+      renameTabWithIndex(tab, tab.index + 1);
+    }
+  }
+});
+
+browser.windows.getAll({ populate: false }).then(windows => {
+  windows.forEach(win => updateAllTabIndices(win.id));
+});
+
+// =====================
+// Copy URL
+// =====================
+
 async function handleCopyURL() {
 	try {
 		// Get the currently active tab

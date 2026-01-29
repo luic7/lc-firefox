@@ -22,7 +22,8 @@
     "browserSettings",
     "clipboardWrite",
     "activeTab",
-    "notifications"
+    "notifications",
+    "*://*/*"
   ],
   "commands": {
     "next-tab": {
