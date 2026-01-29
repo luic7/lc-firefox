@@ -15,11 +15,7 @@ browser.commands.onCommand.addListener(function(command) {
 	if (command.startsWith("stt-")) {
 		const index = parseInt(command.split("-")[1]) - 1;
 		browser.tabs.query({ currentWindow: true }).then(tabs => {
-			const unpinnedTabs = tabs.filter(tab => !tab.pinned);
-
-			if (index >= 0 && index < unpinnedTabs.length) {
-				browser.tabs.update(unpinnedTabs[index].id, { active: true });
-			}
+			browser.tabs.update(tabs[index].id, { active: true });
 		});
 
 		return;
