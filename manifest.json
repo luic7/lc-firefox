@@ -1,9 +1,10 @@
 {
   "manifest_version": 2,
   "name": "lc-shortcuts",
-  "version": "1.15",
+  "version": "1.17",
   "browser_specific_settings": {
     "gecko": {
+      "id": "{93e570c2-74f6-4c90-865e-d73142fe6845}",
       "data_collection_permissions": {
         "required": [
           "none"
