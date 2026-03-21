@@ -92,6 +92,8 @@ browser.commands.onCommand.addListener(function(command) {
 // Tab Index Renaming
 // =====================
 
+const removedTabIds = new Set();
+
 async function renameTabWithIndex(tab, displayIndex) {
   if (!tab.url || tab.url.startsWith('about:') || tab.url.startsWith('moz-extension:')) {
     return;
@@ -107,33 +109,52 @@ async function renameTabWithIndex(tab, displayIndex) {
   } catch (e) {}
 }
 
+const pendingUpdates = {};
+
+function scheduleUpdate(windowId, delay = 0) {
+  clearTimeout(pendingUpdates[windowId]);
+  pendingUpdates[windowId] = setTimeout(() => updateAllTabIndices(windowId), delay);
+}
+
 async function updateAllTabIndices(windowId) {
-  const tabs = await browser.tabs.query({ windowId: windowId });
+  let tabs = await browser.tabs.query({ windowId: windowId });
+  tabs = tabs.filter(t => !removedTabIds.has(t.id));
+  removedTabIds.clear();
   for (let i = 0; i < tabs.length; i++) {
-    renameTabWithIndex(tabs[i], i + 1);
+    await renameTabWithIndex(tabs[i], i + 1);
   }
 }
 
 browser.tabs.onMoved.addListener((tabId, moveInfo) => {
-  updateAllTabIndices(moveInfo.windowId);
+  scheduleUpdate(moveInfo.windowId);
 });
 
 browser.tabs.onCreated.addListener((tab) => {
-  updateAllTabIndices(tab.windowId);
+  scheduleUpdate(tab.windowId);
 });
 
 browser.tabs.onRemoved.addListener((tabId, removeInfo) => {
   if (!removeInfo.isWindowClosing) {
-    updateAllTabIndices(removeInfo.windowId);
+    removedTabIds.add(tabId);
+    scheduleUpdate(removeInfo.windowId);
   }
+});
+
+browser.tabs.onActivated.addListener((activeInfo) => {
+  scheduleUpdate(activeInfo.windowId);
+});
+
+browser.tabs.onAttached.addListener((tabId, attachInfo) => {
+  scheduleUpdate(attachInfo.newWindowId);
+});
+
+browser.tabs.onDetached.addListener((tabId, detachInfo) => {
+  scheduleUpdate(detachInfo.oldWindowId);
 });
 
 browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.title) {
-    const expectedPrefix = `${tab.index + 1}: `;
-    if (!changeInfo.title.startsWith(expectedPrefix)) {
-      renameTabWithIndex(tab, tab.index + 1);
-    }
+    scheduleUpdate(tab.windowId);
   }
 });
 
